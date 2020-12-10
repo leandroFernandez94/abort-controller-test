@@ -6,12 +6,12 @@ function defaultCatch(error) {
   throw(e)
 }
 
-function getAbortableFetch() {
+function useAbortableFetch(url, options, useDefaultCache = true) {
   const abortController = new AbortController();
 
   return {
     abortController,
-    execute: async (url, options, catchCallback) => {
+    execute: async () => {
       try {
         const response = await new Promise(solve => {
           setTimeout(() => {
@@ -22,8 +22,8 @@ function getAbortableFetch() {
         const responseJson = await response.json()
         return responseJson.message
       } catch(e) {
-        if(!catchCallback) return defaultCatch(e)
-        catchCallback(e)
+        if(useDefaultCache) return defaultCatch(e)
+        throw(e)
       }
     }
   }
