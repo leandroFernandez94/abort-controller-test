@@ -2,12 +2,11 @@ function DogPicture({breed}) {
   const [picture, setPicture] = useState(null)
   const [loading, setLoading] = useState(false)
 
-  async function fetchRandomImageFromBreed(signal) {
-    try {
+  async function fetchRandomImageFromBreed() {
     const url = `https://dog.ceo/api/breed/${breed}/images/random`
     const response = await new Promise(solve => {
       setTimeout(() => {
-        solve(fetch(url, {signal: signal}))
+        solve(fetch(url))
       }, 1000)
     })
     const jsonResponse =  await response.json()
@@ -18,24 +17,15 @@ function DogPicture({breed}) {
       setPicture(jsonResponse.message)
       setLoading(false)
     }
-    
-  } catch (e) {
-      if(signal.aborted) {
-        console.log('fue abortado 🤷🏻‍♂️')
-        return
-      }
-      throw(e)
-    }
   }
 
   useEffect(
     function onBreedChange() {
       setLoading(true)
-      const abortController = new AbortController()
-      fetchRandomImageFromBreed(abortController.signal)
+      fetchRandomImageFromBreed()
 
       return function cleanUp() {
-        abortController.abort()
+        console.log('unmounts dog picture')
       }
     }
   , [breed])
